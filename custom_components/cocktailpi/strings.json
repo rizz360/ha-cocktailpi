@@ -1,0 +1,25 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to CocktailPi",
+        "description": "Enter the connection details for your CocktailPi machine.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "use_ssl": "Use HTTPS",
+          "username": "Username",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid username or password.",
+      "cannot_connect": "Could not connect to CocktailPi. Check the host and port.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This CocktailPi machine is already configured."
+    }
+  }
+}
