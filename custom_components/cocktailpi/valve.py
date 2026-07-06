@@ -23,7 +23,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .api import CocktailPiError
 from .const import DATA_PUMP_RUNNING, DATA_PUMPS, DOMAIN, PUMP_RUNNING_STATES
 from .coordinator import CocktailPiCoordinator
-from .device import hub_device_info, pump_device_info
+from .device import hub_device_info, pump_label
 
 
 async def async_setup_entry(
@@ -47,7 +47,6 @@ class CocktailPiPumpValve(CoordinatorEntity[CocktailPiCoordinator], ValveEntity)
     """A single pump: open = running, closed = stopped."""
 
     _attr_has_entity_name = True
-    _attr_name = "Pump"
     _attr_supported_features = ValveEntityFeature.OPEN | ValveEntityFeature.CLOSE
     _attr_reports_position = False
     _attr_icon = "mdi:pump"
@@ -68,9 +67,13 @@ class CocktailPiPumpValve(CoordinatorEntity[CocktailPiCoordinator], ValveEntity)
         return super().available and self._pump is not None
 
     @property
-    def device_info(self) -> DeviceInfo | None:
+    def device_info(self) -> DeviceInfo:
+        return hub_device_info(self._entry, None)
+
+    @property
+    def name(self) -> str:
         pump = self._pump
-        return pump_device_info(self._entry, pump) if pump else None
+        return pump_label(pump) if pump else f"Pump {self._pump_id}"
 
     @property
     def assumed_state(self) -> bool:

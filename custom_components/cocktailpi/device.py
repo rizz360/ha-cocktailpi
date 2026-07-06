@@ -19,12 +19,11 @@ def hub_device_info(entry: ConfigEntry, version: str | None) -> DeviceInfo:
     )
 
 
-def pump_device_info(entry: ConfigEntry, pump: dict[str, Any]) -> DeviceInfo:
-    """Device info for a single pump, linked as a sub-device of the hub."""
-    return DeviceInfo(
-        identifiers={(DOMAIN, f"{entry.entry_id}_pump_{pump['id']}")},
-        name=pump.get("name") or pump.get("printName") or f"Pump {pump['id']}",
-        manufacturer="CocktailPi",
-        model=pump.get("type"),
-        via_device=(DOMAIN, entry.entry_id),
-    )
+def pump_label(pump: dict[str, Any]) -> str:
+    """Human-readable label for a pump, used to prefix its entity names.
+
+    All pump entities live on the single CocktailPi hub device (rather than
+    one sub-device per pump), so this label is what disambiguates e.g.
+    "Pump 1 Fill level" from "Pump 2 Fill level" in the entity list.
+    """
+    return pump.get("name") or pump.get("printName") or f"Pump {pump['id']}"

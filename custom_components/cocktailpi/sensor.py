@@ -13,7 +13,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DATA_COCKTAIL, DATA_PUMPS, DATA_VERSION, DOMAIN
 from .coordinator import CocktailPiCoordinator
-from .device import hub_device_info, pump_device_info
+from .device import hub_device_info, pump_label
 
 
 async def async_setup_entry(
@@ -138,7 +138,15 @@ class CocktailPiCocktailStateSensor(CoordinatorEntity[CocktailPiCoordinator], Se
 
 
 class _PumpEntityBase(CoordinatorEntity[CocktailPiCoordinator]):
-    """Shared lookup/availability logic for entities tied to one pump."""
+    """Shared lookup/availability/naming logic for entities tied to one pump.
+
+    All pumps are exposed as entities on the single CocktailPi hub device
+    (rather than one sub-device per pump) - the pump label is folded into
+    the entity name instead, e.g. "Pump 1 Fill level".
+    """
+
+    _attr_has_entity_name = True
+    _name_suffix = ""
 
     def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int) -> None:
         super().__init__(coordinator)
@@ -154,16 +162,20 @@ class _PumpEntityBase(CoordinatorEntity[CocktailPiCoordinator]):
         return super().available and self._pump is not None
 
     @property
-    def device_info(self) -> DeviceInfo | None:
+    def device_info(self) -> DeviceInfo:
+        return hub_device_info(self._entry, self.coordinator.data.get(DATA_VERSION))
+
+    @property
+    def name(self) -> str:
         pump = self._pump
-        return pump_device_info(self._entry, pump) if pump else None
+        label = pump_label(pump) if pump else f"Pump {self._pump_id}"
+        return f"{label} {self._name_suffix}" if self._name_suffix else label
 
 
 class CocktailPiPumpFillLevelSensor(_PumpEntityBase, SensorEntity):
     """A pump's reservoir fill level, in mL."""
 
-    _attr_has_entity_name = True
-    _attr_name = "Fill level"
+    _name_suffix = "fill level"
     _attr_native_unit_of_measurement = "mL"
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:cup-water"
@@ -186,8 +198,7 @@ class CocktailPiPumpFillLevelSensor(_PumpEntityBase, SensorEntity):
 class CocktailPiPumpStatusSensor(_PumpEntityBase, SensorEntity):
     """A pump's currently assigned ingredient and readiness state."""
 
-    _attr_has_entity_name = True
-    _attr_name = "Status"
+    _name_suffix = "status"
     _attr_icon = "mdi:information-outline"
 
     def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int) -> None:
