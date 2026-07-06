@@ -1,5 +1,10 @@
 # Home Assistant integration for CocktailPi
 
+[![Validate](https://github.com/rizz360/ha-cocktailpi/actions/workflows/validate.yml/badge.svg)](https://github.com/rizz360/ha-cocktailpi/actions/workflows/validate.yml)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![GitHub Release](https://img.shields.io/github/v/release/rizz360/ha-cocktailpi)](https://github.com/rizz360/ha-cocktailpi/releases)
+[![License](https://img.shields.io/github/license/rizz360/ha-cocktailpi)](LICENSE)
+
 A custom integration for [CocktailPi](https://github.com/alex9849/CocktailPi), built against the
 API reverse-engineered in [`docs/api.md`](docs/api.md).
 
@@ -32,7 +37,7 @@ retrying with the same host/port, showing an `already_in_progress` error. This i
 anywhere in the UI as a pending/discovered item, and there's no way to clear it short of
 **restarting Home Assistant** — after a restart, adding the integration again should work.
 
-## What v1 covers
+## Features
 
 - **Pump monitoring**: a fill-level sensor (mL) and a status sensor (current ingredient + pump
   state) per pump, polled over REST every 30s.
@@ -84,5 +89,8 @@ as a release candidate, not a working release, until that testing happens.
 
 - Test against a real CocktailPi backend + running HA (config flow, sensors/valves, services, WS
   client).
-- Add an icon/logo via [home-assistant/brands](https://github.com/home-assistant/brands) if this
-  goes into HACS's default repository list.
+- The icon under `custom_components/cocktailpi/brand/` only renders in Home Assistant's own UI
+  (2026.3+, via the brands proxy). The HACS store listing itself sources its icon from
+  [home-assistant/brands](https://github.com/home-assistant/brands)
+  (`custom_integrations/cocktailpi/`), so a PR there is still needed for HACS to show anything but
+  the default icon — this applies regardless of default-repository-list status.
