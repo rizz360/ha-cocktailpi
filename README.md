@@ -5,8 +5,9 @@
 [![GitHub Release](https://img.shields.io/github/v/release/rizz360/ha-cocktailpi)](https://github.com/rizz360/ha-cocktailpi/releases)
 [![License](https://img.shields.io/github/license/rizz360/ha-cocktailpi)](LICENSE)
 
-A custom integration for [CocktailPi](https://github.com/alex9849/CocktailPi), built against the
-API reverse-engineered in [`docs/api.md`](docs/api.md).
+A custom integration for [CocktailPi](https://github.com/alex9849/CocktailPi) that connects your
+cocktail maker to Home Assistant. An API reference is maintained at
+[`docs/api.md`](docs/api.md) for anyone looking to build on top of it.
 
 This repo includes a `hacs.json`, so it can be added to HACS as a custom repository, or installed
 manually.
