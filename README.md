@@ -24,6 +24,14 @@ You'll need the host/port of your CocktailPi instance and a username/password fo
 least the `PUMP_INGREDIENT_EDITOR` role (needed to start/stop pumps; `ADMIN` if you also want to
 use pump-editing features later).
 
+### Troubleshooting: "Already in progress"
+
+If a setup attempt is interrupted (e.g. the CocktailPi machine was unreachable and you closed the
+dialog without it finishing), Home Assistant can be left with a stale config flow that blocks
+retrying with the same host/port, showing an `already_in_progress` error. This isn't shown
+anywhere in the UI as a pending/discovered item, and there's no way to clear it short of
+**restarting Home Assistant** — after a restart, adding the integration again should work.
+
 ## What v1 covers
 
 - **Pump monitoring**: a fill-level sensor (mL) and a status sensor (current ingredient + pump
