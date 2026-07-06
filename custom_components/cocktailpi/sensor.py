@@ -1,10 +1,11 @@
-"""Sensor platform for CocktailPi: pump fill level/status, and current cocktail."""
+"""Sensor platform for CocktailPi: pump fill level/status, and current cocktail progress/state."""
 from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import PERCENTAGE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -21,7 +22,11 @@ async def async_setup_entry(
     """Set up CocktailPi sensors from a config entry."""
     coordinator: CocktailPiCoordinator = hass.data[DOMAIN][entry.entry_id]
 
-    entities: list[SensorEntity] = [CocktailPiCurrentCocktailSensor(coordinator, entry)]
+    entities: list[SensorEntity] = [
+        CocktailPiCurrentCocktailSensor(coordinator, entry),
+        CocktailPiCocktailProgressSensor(coordinator, entry),
+        CocktailPiCocktailStateSensor(coordinator, entry),
+    ]
     for pump_id in coordinator.data[DATA_PUMPS]:
         entities.append(CocktailPiPumpFillLevelSensor(coordinator, entry, pump_id))
         entities.append(CocktailPiPumpStatusSensor(coordinator, entry, pump_id))
@@ -63,6 +68,73 @@ class CocktailPiCurrentCocktailSensor(CoordinatorEntity[CocktailPiCoordinator], 
             "progress": progress.get("progress"),
             "written_instruction": progress.get("writtenInstruction"),
         }
+
+
+class CocktailPiCocktailProgressSensor(CoordinatorEntity[CocktailPiCoordinator], SensorEntity):
+    """Progress of the cocktail currently being produced, in percent.
+
+    Mirrors the backend's own lifecycle: 0% while idle, rising during
+    pouring, 100% on FINISHED, then back to 0% once the backend clears the
+    slot (pushes "DELETE" over the cocktailprogress WS topic) a few seconds
+    later - no client-side timer needed.
+    """
+
+    _attr_has_entity_name = True
+    _attr_name = "Cocktail progress"
+    _attr_icon = "mdi:progress-clock"
+    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator)
+        self._entry = entry
+        self._attr_unique_id = f"{entry.entry_id}_cocktail_progress"
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        return hub_device_info(self._entry, self.coordinator.data.get(DATA_VERSION))
+
+    @property
+    def native_value(self) -> int:
+        progress = self.coordinator.data.get(DATA_COCKTAIL)
+        if not progress:
+            return 0
+        return progress.get("progress") or 0
+
+
+class CocktailPiCocktailStateSensor(CoordinatorEntity[CocktailPiCoordinator], SensorEntity):
+    """Production state of the cocktail currently being produced."""
+
+    _attr_has_entity_name = True
+    _attr_name = "Cocktail state"
+    _attr_icon = "mdi:information-outline"
+    _attr_device_class = SensorDeviceClass.ENUM
+    _attr_options = [
+        "idle",
+        "ready_to_start",
+        "running",
+        "manual_ingredient_add",
+        "manual_action_required",
+        "finished",
+        "cancelled",
+        "error",
+    ]
+
+    def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator)
+        self._entry = entry
+        self._attr_unique_id = f"{entry.entry_id}_cocktail_state"
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        return hub_device_info(self._entry, self.coordinator.data.get(DATA_VERSION))
+
+    @property
+    def native_value(self) -> str:
+        progress = self.coordinator.data.get(DATA_COCKTAIL)
+        if not progress:
+            return "idle"
+        return str(progress.get("state", "idle")).lower()
 
 
 class _PumpEntityBase(CoordinatorEntity[CocktailPiCoordinator]):

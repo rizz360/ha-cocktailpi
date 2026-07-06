@@ -41,8 +41,11 @@ anywhere in the UI as a pending/discovered item, and there's no way to clear it 
   services (target a pump valve) to prime/reverse-prime a pump's tube.
 - **Cocktail ordering & progress**: `cocktailpi.order_cocktail` and `cocktailpi.cancel_cocktail`
   services, plus a "Current cocktail" sensor showing the recipe name currently in production
-  (state/progress/instruction as attributes) — this reflects orders placed from *anywhere*
-  (the CocktailPi touchscreen included), not just from Home Assistant.
+  (state/progress/instruction as attributes), a "Cocktail progress" sensor (0-100%, back to 0%
+  once the backend clears the finished order), and a "Cocktail state" sensor (idle,
+  ready_to_start, running, manual_ingredient_add, manual_action_required, finished, cancelled,
+  error) — these reflect orders placed from *anywhere* (the CocktailPi touchscreen included), not
+  just from Home Assistant.
 - **System info**: CocktailPi's version is attached as the hub device's `sw_version`.
 
 ## Architecture notes
