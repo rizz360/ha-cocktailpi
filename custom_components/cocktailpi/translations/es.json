@@ -31,6 +31,19 @@
       "reauth_successful": "La reautenticación se realizó correctamente."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opciones de CocktailPi",
+        "data": {
+          "scan_interval": "Intervalo de sondeo (segundos)"
+        },
+        "data_description": {
+          "scan_interval": "Con qué frecuencia se consulta por REST el estado de las bombas y del sistema. El progreso del cóctel en directo llega igualmente por WebSocket."
+        }
+      }
+    }
+  },
   "entity": {
     "sensor": {
       "current_cocktail": {

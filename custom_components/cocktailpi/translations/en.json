@@ -31,6 +31,19 @@
       "reauth_successful": "Re-authentication was successful."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "CocktailPi options",
+        "data": {
+          "scan_interval": "Polling interval (seconds)"
+        },
+        "data_description": {
+          "scan_interval": "How often pump and system state is polled over REST. Live cocktail progress arrives via WebSocket push regardless."
+        }
+      }
+    }
+  },
   "entity": {
     "sensor": {
       "current_cocktail": {

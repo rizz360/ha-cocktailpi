@@ -11,9 +11,11 @@ Home Assistant, the touchscreen, or anywhere else.
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -26,7 +28,7 @@ from .const import (
     DATA_PUMP_RUNNING,
     DATA_PUMPS,
     DATA_VERSION,
-    DEFAULT_SCAN_INTERVAL,
+    DEFAULT_SCAN_INTERVAL_SECONDS,
     DOMAIN,
 )
 from .ws import CocktailPiWebSocketClient
@@ -38,7 +40,13 @@ class CocktailPiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Coordinates REST-polled pump/system state plus WS-pushed live state."""
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, api: CocktailPiApiClient) -> None:
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=DEFAULT_SCAN_INTERVAL)
+        scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL_SECONDS)
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=DOMAIN,
+            update_interval=timedelta(seconds=scan_interval),
+        )
         self.api = api
         self.entry = entry
         self.ws: CocktailPiWebSocketClient | None = None

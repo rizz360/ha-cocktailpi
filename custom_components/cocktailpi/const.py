@@ -1,8 +1,6 @@
 """Constants for the CocktailPi integration."""
 from __future__ import annotations
 
-from datetime import timedelta
-
 from homeassistant.const import Platform
 
 DOMAIN = "cocktailpi"
@@ -11,7 +9,11 @@ CONF_USE_SSL = "use_ssl"
 
 DEFAULT_PORT = 80
 DEFAULT_USE_SSL = False
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=30)
+
+# REST poll interval (seconds), user-tunable via the options flow.
+DEFAULT_SCAN_INTERVAL_SECONDS = 30
+MIN_SCAN_INTERVAL_SECONDS = 10
+MAX_SCAN_INTERVAL_SECONDS = 300
 
 PLATFORMS: list[Platform] = [
     Platform.SENSOR,

@@ -31,6 +31,19 @@
       "reauth_successful": "Die erneute Anmeldung war erfolgreich."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "CocktailPi-Optionen",
+        "data": {
+          "scan_interval": "Abrufintervall (Sekunden)"
+        },
+        "data_description": {
+          "scan_interval": "Wie oft Pumpen- und Systemstatus per REST abgefragt werden. Der Live-Cocktail-Fortschritt kommt unabhängig davon per WebSocket-Push."
+        }
+      }
+    }
+  },
   "entity": {
     "sensor": {
       "current_cocktail": {
