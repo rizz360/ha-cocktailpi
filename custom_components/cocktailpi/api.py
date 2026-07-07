@@ -115,7 +115,7 @@ class CocktailPiApiClient:
                 resp.raise_for_status()
             except ClientResponseError as err:
                 raise CocktailPiError(f"{method} {path} failed: HTTP {resp.status}") from err
-            if resp.content_length == 0:
+            if not await resp.read():
                 return None
             return await resp.json(content_type=None)
 
