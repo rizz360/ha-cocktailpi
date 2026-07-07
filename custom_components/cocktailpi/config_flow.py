@@ -7,9 +7,8 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant import config_entries
+from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResult
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import CocktailPiApiClient, CocktailPiAuthError, CocktailPiConnectionError
@@ -35,15 +34,17 @@ STEP_REAUTH_SCHEMA = vol.Schema(
 )
 
 
-class CocktailPiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class CocktailPiConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for CocktailPi."""
 
     VERSION = 1
 
     def __init__(self) -> None:
-        self._reauth_entry: config_entries.ConfigEntry | None = None
+        self._reauth_entry: ConfigEntry | None = None
 
-    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         errors: dict[str, str] = {}
 
         if user_input is not None:
@@ -75,14 +76,14 @@ class CocktailPiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(step_id="user", data_schema=STEP_USER_SCHEMA, errors=errors)
 
-    async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> FlowResult:
+    async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> ConfigFlowResult:
         """Handle reauthentication when the stored credentials stop working."""
         self._reauth_entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
         return await self.async_step_reauth_confirm()
 
     async def async_step_reauth_confirm(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         errors: dict[str, str] = {}
         entry = self._reauth_entry
         assert entry is not None

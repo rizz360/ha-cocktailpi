@@ -5,7 +5,7 @@ import logging
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import (
@@ -30,7 +30,7 @@ from .const import (
     SERVICE_CANCEL_COCKTAIL,
     SERVICE_ORDER_COCKTAIL,
 )
-from .coordinator import CocktailPiCoordinator
+from .coordinator import CocktailPiConfigEntry, CocktailPiCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,19 +49,24 @@ CANCEL_COCKTAIL_SCHEMA = vol.Schema({vol.Optional(ATTR_CONFIG_ENTRY_ID): cv.stri
 
 def _get_coordinator(hass: HomeAssistant, call: ServiceCall) -> CocktailPiCoordinator:
     """Resolve which configured CocktailPi instance a domain-level service call targets."""
-    coordinators: dict[str, CocktailPiCoordinator] = hass.data.get(DOMAIN, {})
+    entries: list[CocktailPiConfigEntry] = [
+        entry
+        for entry in hass.config_entries.async_entries(DOMAIN)
+        if entry.state is ConfigEntryState.LOADED
+    ]
     entry_id = call.data.get(ATTR_CONFIG_ENTRY_ID)
     if entry_id:
-        if entry_id not in coordinators:
-            raise HomeAssistantError(f"Unknown CocktailPi config entry '{entry_id}'")
-        return coordinators[entry_id]
-    if not coordinators:
+        for entry in entries:
+            if entry.entry_id == entry_id:
+                return entry.runtime_data
+        raise HomeAssistantError(f"Unknown CocktailPi config entry '{entry_id}'")
+    if not entries:
         raise HomeAssistantError("No CocktailPi instance is configured")
-    if len(coordinators) > 1:
+    if len(entries) > 1:
         raise HomeAssistantError(
             "Multiple CocktailPi instances are configured; specify config_entry_id"
         )
-    return next(iter(coordinators.values()))
+    return entries[0].runtime_data
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -100,7 +105,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: CocktailPiConfigEntry) -> bool:
     """Set up CocktailPi from a config entry."""
     session = async_get_clientsession(hass)
     api = CocktailPiApiClient(
@@ -122,17 +127,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     coordinator = CocktailPiCoordinator(hass, entry, api)
     await coordinator.async_config_entry_first_refresh()
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
+    entry.runtime_data = coordinator
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: CocktailPiConfigEntry) -> bool:
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
-        coordinator: CocktailPiCoordinator = hass.data[DOMAIN].pop(entry.entry_id)
-        await coordinator.async_shutdown_ws()
+        await entry.runtime_data.async_shutdown_ws()
     return unload_ok

@@ -10,16 +10,18 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .api import CocktailPiError
-from .const import DATA_VERSION, DOMAIN
-from .coordinator import CocktailPiCoordinator
+from .const import DATA_VERSION
+from .coordinator import CocktailPiConfigEntry, CocktailPiCoordinator
 from .device import hub_device_info
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant,
+    entry: CocktailPiConfigEntry,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up CocktailPi buttons from a config entry."""
-    coordinator: CocktailPiCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     async_add_entities([CocktailPiCancelCocktailButton(coordinator, entry)])
 
 

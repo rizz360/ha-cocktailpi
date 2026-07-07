@@ -21,16 +21,18 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .api import CocktailPiError
-from .const import DATA_PUMP_RUNNING, DATA_PUMPS, DOMAIN, PUMP_RUNNING_STATES
-from .coordinator import CocktailPiCoordinator
+from .const import DATA_PUMP_RUNNING, DATA_PUMPS, PUMP_RUNNING_STATES
+from .coordinator import CocktailPiConfigEntry, CocktailPiCoordinator
 from .device import hub_device_info, pump_label
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant,
+    entry: CocktailPiConfigEntry,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up CocktailPi valves from a config entry."""
-    coordinator: CocktailPiCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
 
     entities: list[ValveEntity] = [CocktailPiAllPumpsValve(coordinator, entry)]
     for pump_id in coordinator.data[DATA_PUMPS]:

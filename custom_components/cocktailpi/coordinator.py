@@ -128,3 +128,6 @@ class CocktailPiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if self.ws is not None:
             await self.ws.async_stop()
             self.ws = None
+
+
+CocktailPiConfigEntry = ConfigEntry[CocktailPiCoordinator]
