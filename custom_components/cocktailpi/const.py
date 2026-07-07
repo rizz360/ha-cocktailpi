@@ -13,13 +13,19 @@ DEFAULT_PORT = 80
 DEFAULT_USE_SSL = False
 DEFAULT_SCAN_INTERVAL = timedelta(seconds=30)
 
-PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.VALVE, Platform.BUTTON]
+PLATFORMS: list[Platform] = [
+    Platform.SENSOR,
+    Platform.VALVE,
+    Platform.BUTTON,
+    Platform.BINARY_SENSOR,
+]
 
 # Keys inside the coordinator's .data dict.
 DATA_PUMPS = "pumps"
 DATA_COCKTAIL = "cocktail"
 DATA_PUMP_RUNNING = "pump_running"
 DATA_VERSION = "version"
+DATA_DISPENSING_AREA = "dispensing_area"
 
 # Service names.
 SERVICE_ORDER_COCKTAIL = "order_cocktail"

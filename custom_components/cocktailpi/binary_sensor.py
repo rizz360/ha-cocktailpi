@@ -1,0 +1,66 @@
+"""Binary sensor platform for CocktailPi: glass detection on the dispensing area."""
+from __future__ import annotations
+
+from typing import Any
+
+from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from .const import DATA_DISPENSING_AREA, DATA_VERSION, DOMAIN
+from .coordinator import CocktailPiCoordinator
+from .device import hub_device_info
+
+
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+) -> None:
+    """Set up CocktailPi binary sensors from a config entry."""
+    coordinator: CocktailPiCoordinator = hass.data[DOMAIN][entry.entry_id]
+    async_add_entities([CocktailPiGlassDetectedBinarySensor(coordinator, entry)])
+
+
+class CocktailPiGlassDetectedBinarySensor(
+    CoordinatorEntity[CocktailPiCoordinator], BinarySensorEntity
+):
+    """Whether a glass is currently detected on the dispensing area.
+
+    Only meaningful on machines with dispensing-area/glass-detection hardware
+    (see ``documentation/API.md``'s "dispensingarea" WS topic) - on machines
+    without it the backend still pushes state, just always reporting the area
+    as empty. Disabled by default since not every setup has this hardware.
+    """
+
+    _attr_has_entity_name = True
+    _attr_name = "Glass detected"
+    _attr_device_class = BinarySensorDeviceClass.OCCUPANCY
+    _attr_entity_registry_enabled_default = False
+
+    def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator)
+        self._entry = entry
+        self._attr_unique_id = f"{entry.entry_id}_glass_detected"
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        return hub_device_info(self._entry, self.coordinator.data.get(DATA_VERSION))
+
+    @property
+    def _state(self) -> dict[str, Any] | None:
+        return self.coordinator.data.get(DATA_DISPENSING_AREA)
+
+    @property
+    def is_on(self) -> bool | None:
+        state = self._state
+        if state is None:
+            return None
+        return not state.get("areaEmpty", True)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        state = self._state
+        glass = state.get("glass") if state else None
+        return {"glass": glass.get("name")} if glass else {}

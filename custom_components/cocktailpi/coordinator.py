@@ -20,6 +20,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .api import CocktailPiApiClient, CocktailPiAuthError, CocktailPiConnectionError, CocktailPiError
 from .const import (
     DATA_COCKTAIL,
+    DATA_DISPENSING_AREA,
     DATA_PUMP_RUNNING,
     DATA_PUMPS,
     DATA_VERSION,
@@ -44,6 +45,7 @@ class CocktailPiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             DATA_COCKTAIL: None,
             DATA_PUMP_RUNNING: {},
             DATA_VERSION: None,
+            DATA_DISPENSING_AREA: None,
         }
 
     async def _async_update_data(self) -> dict[str, Any]:
@@ -75,6 +77,7 @@ class CocktailPiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.ws = CocktailPiWebSocketClient(self.api.session, self.api.base_url, lambda: self.api.token)
         self.ws.subscribe("/user/topic/cocktailprogress", self._on_cocktail_progress)
         self.ws.subscribe("/user/topic/pump/layout", self._on_pump_layout)
+        self.ws.subscribe("/user/topic/dispensingarea", self._on_dispensing_area)
         for pump_id in self.data[DATA_PUMPS]:
             self.ws.subscribe(
                 f"/user/topic/pump/runningstate/{pump_id}",
@@ -93,6 +96,10 @@ class CocktailPiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def _on_pump_running_state(self, pump_id: int, payload: Any) -> None:
         self.data[DATA_PUMP_RUNNING][pump_id] = None if payload == "DELETE" else payload
+        self.async_set_updated_data(self.data)
+
+    def _on_dispensing_area(self, payload: Any) -> None:
+        self.data[DATA_DISPENSING_AREA] = None if payload == "DELETE" else payload
         self.async_set_updated_data(self.data)
 
     async def async_shutdown_ws(self) -> None:
