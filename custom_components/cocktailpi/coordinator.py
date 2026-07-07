@@ -21,6 +21,7 @@ from .api import CocktailPiApiClient, CocktailPiAuthError, CocktailPiConnectionE
 from .const import (
     DATA_COCKTAIL,
     DATA_DISPENSING_AREA,
+    DATA_GPIO_HEALTHY,
     DATA_PUMP_RUNNING,
     DATA_PUMPS,
     DATA_VERSION,
@@ -46,6 +47,7 @@ class CocktailPiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             DATA_PUMP_RUNNING: {},
             DATA_VERSION: None,
             DATA_DISPENSING_AREA: None,
+            DATA_GPIO_HEALTHY: None,
         }
 
     async def _async_update_data(self) -> dict[str, Any]:
@@ -61,8 +63,26 @@ class CocktailPiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if self.data.get(DATA_VERSION) is None:
             self.data[DATA_VERSION] = await self.api.async_get_version()
 
+        await self._async_update_gpio_health()
+
         self._ensure_websocket()
         return self.data
+
+    async def _async_update_gpio_health(self) -> None:
+        """Refresh GPIO/I2C board health, in isolation from the rest of the update.
+
+        GET /api/gpio/ requires SUPER_ADMIN (see documentation/API.md), which
+        most CocktailPi accounts won't have - that's expected and shouldn't
+        fail the whole coordinator update, so failures just leave the health
+        state unknown (None) rather than raising UpdateFailed.
+        """
+        try:
+            boards = await self.api.async_get_gpio_boards()
+        except CocktailPiError as err:
+            _LOGGER.debug("Could not fetch GPIO board status: %s", err)
+            self.data[DATA_GPIO_HEALTHY] = None
+            return
+        self.data[DATA_GPIO_HEALTHY] = not any(board.get("errors") for board in boards)
 
     def _ensure_websocket(self) -> None:
         """Start the WS overlay once, using the pump ids known at that point.

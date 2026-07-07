@@ -189,6 +189,16 @@ class CocktailPiApiClient:
                 return recipe["id"]
         return recipes[0]["id"]
 
+    # --- GPIO --------------------------------------------------------------
+
+    async def async_get_gpio_boards(self) -> list[dict[str, Any]]:
+        """GET /api/gpio/ - list configured GPIO/I2C boards, each with its current errors.
+
+        Requires SUPER_ADMIN; callers should expect a CocktailPiError (HTTP
+        403) on accounts without that role.
+        """
+        return await self._request_json("GET", "/api/gpio/") or []
+
     # --- System ----------------------------------------------------------
 
     async def async_get_version(self) -> str | None:

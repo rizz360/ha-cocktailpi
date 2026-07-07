@@ -26,6 +26,7 @@ DATA_COCKTAIL = "cocktail"
 DATA_PUMP_RUNNING = "pump_running"
 DATA_VERSION = "version"
 DATA_DISPENSING_AREA = "dispensing_area"
+DATA_GPIO_HEALTHY = "gpio_healthy"
 
 # Service names.
 SERVICE_ORDER_COCKTAIL = "order_cocktail"
