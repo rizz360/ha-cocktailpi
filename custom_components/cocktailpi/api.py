@@ -203,11 +203,18 @@ class CocktailPiApiClient:
     # --- System ----------------------------------------------------------
 
     async def async_get_version(self) -> str | None:
-        """GET /api/system/version - public endpoint, no auth required."""
+        """GET /api/system/version - public endpoint, no auth required.
+
+        The endpoint returns an envelope like {"version": "2.1.3"}; only the
+        version string itself is returned (it feeds device sw_version).
+        """
         try:
             async with self._session.get(f"{self._base_url}/api/system/version") as resp:
                 if resp.status != 200:
                     return None
-                return await resp.json(content_type=None)
+                data = await resp.json(content_type=None)
         except ClientError:
             return None
+        if isinstance(data, dict):
+            return data.get("version")
+        return data

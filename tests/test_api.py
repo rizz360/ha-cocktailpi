@@ -90,3 +90,17 @@ async def test_find_recipe_id_no_match(hass: HomeAssistant, aioclient_mock) -> N
 
     with pytest.raises(CocktailPiError):
         await _client(hass).async_find_recipe_id("does not exist")
+
+
+async def test_get_version_unwraps_envelope(hass: HomeAssistant, aioclient_mock) -> None:
+    """The version endpoint's {"version": ...} envelope is unwrapped to the string."""
+    aioclient_mock.get(f"{BASE}/api/system/version", json={"version": "2.1.3"})
+
+    assert await _client(hass).async_get_version() == "2.1.3"
+
+
+async def test_get_version_unavailable(hass: HomeAssistant, aioclient_mock) -> None:
+    """A failing version endpoint yields None instead of raising."""
+    aioclient_mock.get(f"{BASE}/api/system/version", status=500)
+
+    assert await _client(hass).async_get_version() is None
