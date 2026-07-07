@@ -43,7 +43,7 @@ class CocktailPiGlassDetectedBinarySensor(
     """
 
     _attr_has_entity_name = True
-    _attr_name = "Glass detected"
+    _attr_translation_key = "glass_detected"
     _attr_device_class = BinarySensorDeviceClass.OCCUPANCY
     _attr_entity_registry_enabled_default = False
 
@@ -85,7 +85,7 @@ class CocktailPiGpioHealthBinarySensor(CoordinatorEntity[CocktailPiCoordinator],
     """
 
     _attr_has_entity_name = True
-    _attr_name = "GPIO health"
+    _attr_translation_key = "gpio_health"
     _attr_device_class = BinarySensorDeviceClass.PROBLEM
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False

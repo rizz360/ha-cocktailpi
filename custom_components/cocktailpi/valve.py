@@ -49,6 +49,7 @@ class CocktailPiPumpValve(CoordinatorEntity[CocktailPiCoordinator], ValveEntity)
     """A single pump: open = running, closed = stopped."""
 
     _attr_has_entity_name = True
+    _attr_translation_key = "pump"
     _attr_supported_features = ValveEntityFeature.OPEN | ValveEntityFeature.CLOSE
     _attr_reports_position = False
     _attr_icon = "mdi:pump"
@@ -59,6 +60,10 @@ class CocktailPiPumpValve(CoordinatorEntity[CocktailPiCoordinator], ValveEntity)
         self._pump_id = pump_id
         self._attr_unique_id = f"{entry.entry_id}_pump_{pump_id}_valve"
         self._optimistic_open: bool | None = None
+        pump = coordinator.data[DATA_PUMPS].get(pump_id)
+        self._attr_translation_placeholders = {
+            "pump_label": pump_label(pump) if pump else f"Pump {pump_id}"
+        }
 
     @property
     def _pump(self) -> dict[str, Any] | None:
@@ -71,11 +76,6 @@ class CocktailPiPumpValve(CoordinatorEntity[CocktailPiCoordinator], ValveEntity)
     @property
     def device_info(self) -> DeviceInfo:
         return hub_device_info(self._entry, None)
-
-    @property
-    def name(self) -> str:
-        pump = self._pump
-        return pump_label(pump) if pump else f"Pump {self._pump_id}"
 
     @property
     def assumed_state(self) -> bool:
@@ -129,7 +129,7 @@ class CocktailPiAllPumpsValve(CoordinatorEntity[CocktailPiCoordinator], ValveEnt
     """A single valve that starts/stops every pump at once."""
 
     _attr_has_entity_name = True
-    _attr_name = "All pumps"
+    _attr_translation_key = "all_pumps"
     _attr_supported_features = ValveEntityFeature.OPEN | ValveEntityFeature.CLOSE
     _attr_reports_position = False
     _attr_assumed_state = True

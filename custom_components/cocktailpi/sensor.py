@@ -41,7 +41,7 @@ class CocktailPiCurrentCocktailSensor(CoordinatorEntity[CocktailPiCoordinator], 
     """Name of the cocktail currently being produced, regardless of who ordered it."""
 
     _attr_has_entity_name = True
-    _attr_name = "Current cocktail"
+    _attr_translation_key = "current_cocktail"
     _attr_icon = "mdi:glass-cocktail"
 
     def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry) -> None:
@@ -83,7 +83,7 @@ class CocktailPiCocktailProgressSensor(CoordinatorEntity[CocktailPiCoordinator],
     """
 
     _attr_has_entity_name = True
-    _attr_name = "Cocktail progress"
+    _attr_translation_key = "cocktail_progress"
     _attr_icon = "mdi:progress-clock"
     _attr_native_unit_of_measurement = PERCENTAGE
     _attr_state_class = SensorStateClass.MEASUREMENT
@@ -109,7 +109,7 @@ class CocktailPiCocktailStateSensor(CoordinatorEntity[CocktailPiCoordinator], Se
     """Production state of the cocktail currently being produced."""
 
     _attr_has_entity_name = True
-    _attr_name = "Cocktail state"
+    _attr_translation_key = "cocktail_state"
     _attr_icon = "mdi:information-outline"
     _attr_device_class = SensorDeviceClass.ENUM
     _attr_options = [
@@ -150,7 +150,7 @@ class CocktailPiLoadCellWeightSensor(CoordinatorEntity[CocktailPiCoordinator], S
     """
 
     _attr_has_entity_name = True
-    _attr_name = "Load cell weight"
+    _attr_translation_key = "load_cell_weight"
     _attr_icon = "mdi:scale"
     _attr_native_unit_of_measurement = UnitOfMass.GRAMS
     _attr_device_class = SensorDeviceClass.WEIGHT
@@ -179,16 +179,22 @@ class _PumpEntityBase(CoordinatorEntity[CocktailPiCoordinator]):
 
     All pumps are exposed as entities on the single CocktailPi hub device
     (rather than one sub-device per pump) - the pump label is folded into
-    the entity name instead, e.g. "Pump 1 Fill level".
+    the entity name via a translation placeholder, e.g. "Pump 1 fill level".
+    The label is resolved once at entity creation; pumps renamed on the
+    CocktailPi side keep their old label until the integration reloads,
+    consistent with the pumps-are-static assumption in the coordinator.
     """
 
     _attr_has_entity_name = True
-    _name_suffix = ""
 
     def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int) -> None:
         super().__init__(coordinator)
         self._entry = entry
         self._pump_id = pump_id
+        pump = coordinator.data[DATA_PUMPS].get(pump_id)
+        self._attr_translation_placeholders = {
+            "pump_label": pump_label(pump) if pump else f"Pump {pump_id}"
+        }
 
     @property
     def _pump(self) -> dict[str, Any] | None:
@@ -202,17 +208,11 @@ class _PumpEntityBase(CoordinatorEntity[CocktailPiCoordinator]):
     def device_info(self) -> DeviceInfo:
         return hub_device_info(self._entry, self.coordinator.data.get(DATA_VERSION))
 
-    @property
-    def name(self) -> str:
-        pump = self._pump
-        label = pump_label(pump) if pump else f"Pump {self._pump_id}"
-        return f"{label} {self._name_suffix}" if self._name_suffix else label
-
 
 class CocktailPiPumpFillLevelSensor(_PumpEntityBase, SensorEntity):
     """A pump's reservoir fill level, in mL."""
 
-    _name_suffix = "fill level"
+    _attr_translation_key = "pump_fill_level"
     _attr_native_unit_of_measurement = "mL"
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:cup-water"
@@ -235,7 +235,7 @@ class CocktailPiPumpFillLevelSensor(_PumpEntityBase, SensorEntity):
 class CocktailPiPumpStatusSensor(_PumpEntityBase, SensorEntity):
     """A pump's currently assigned ingredient and readiness state."""
 
-    _name_suffix = "status"
+    _attr_translation_key = "pump_status"
     _attr_icon = "mdi:information-outline"
 
     def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int) -> None:

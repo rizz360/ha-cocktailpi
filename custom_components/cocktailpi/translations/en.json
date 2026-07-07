@@ -30,5 +30,104 @@
       "already_configured": "This CocktailPi machine is already configured.",
       "reauth_successful": "Re-authentication was successful."
     }
+  },
+  "entity": {
+    "sensor": {
+      "current_cocktail": {
+        "name": "Current cocktail"
+      },
+      "cocktail_progress": {
+        "name": "Cocktail progress"
+      },
+      "cocktail_state": {
+        "name": "Cocktail state",
+        "state": {
+          "idle": "Idle",
+          "ready_to_start": "Ready to start",
+          "running": "Running",
+          "manual_ingredient_add": "Add ingredient manually",
+          "manual_action_required": "Manual action required",
+          "finished": "Finished",
+          "cancelled": "Cancelled",
+          "error": "Error"
+        }
+      },
+      "load_cell_weight": {
+        "name": "Load cell weight"
+      },
+      "pump_fill_level": {
+        "name": "{pump_label} fill level"
+      },
+      "pump_status": {
+        "name": "{pump_label} status"
+      }
+    },
+    "binary_sensor": {
+      "glass_detected": {
+        "name": "Glass detected"
+      },
+      "gpio_health": {
+        "name": "GPIO health"
+      }
+    },
+    "button": {
+      "cancel_cocktail": {
+        "name": "Cancel cocktail"
+      }
+    },
+    "valve": {
+      "pump": {
+        "name": "{pump_label}"
+      },
+      "all_pumps": {
+        "name": "All pumps"
+      }
+    }
+  },
+  "services": {
+    "order_cocktail": {
+      "name": "Order cocktail",
+      "description": "Starts producing a recipe on the CocktailPi machine.",
+      "fields": {
+        "recipe_id": {
+          "name": "Recipe ID",
+          "description": "The numeric ID of the recipe to produce. Provide this or the recipe name, not both."
+        },
+        "recipe_name": {
+          "name": "Recipe name",
+          "description": "The recipe's name, resolved to an ID via a search. Provide this or the recipe ID, not both."
+        },
+        "amount_ml": {
+          "name": "Amount (mL)",
+          "description": "Amount to produce, in millilitres. Defaults to the recipe's default glass size if omitted."
+        },
+        "is_ingredient": {
+          "name": "Is ingredient recipe",
+          "description": "Set to true if the ID/name refers to an ingredient recipe (e.g. a house-made syrup) rather than a regular cocktail."
+        },
+        "config_entry_id": {
+          "name": "CocktailPi instance",
+          "description": "Only needed if you have more than one CocktailPi configured."
+        }
+      }
+    },
+    "cancel_cocktail": {
+      "name": "Cancel cocktail",
+      "description": "Cancels the cocktail currently in production.",
+      "fields": {
+        "config_entry_id": {
+          "name": "CocktailPi instance",
+          "description": "Only needed if you have more than one CocktailPi configured."
+        }
+      }
+    },
+    "pump_up": {
+      "name": "Prime pump",
+      "description": "Runs the pump forward to prime/fill the tube."
+    },
+    "pump_back": {
+      "name": "Reverse-prime pump",
+      "description": "Runs the pump backward to empty the tube back into the bottle. Requires direction-control hardware."
+    }
   }
 }

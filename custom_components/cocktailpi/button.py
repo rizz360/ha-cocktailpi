@@ -29,7 +29,7 @@ class CocktailPiCancelCocktailButton(CoordinatorEntity[CocktailPiCoordinator], B
     """Cancels whatever cocktail is currently being produced."""
 
     _attr_has_entity_name = True
-    _attr_name = "Cancel cocktail"
+    _attr_translation_key = "cancel_cocktail"
     _attr_icon = "mdi:cancel"
 
     def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry) -> None:

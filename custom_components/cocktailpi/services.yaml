@@ -1,24 +1,18 @@
+# Names and descriptions live in strings.json / translations/*.json
+# (the "services" section); this file only declares fields and targets.
 order_cocktail:
-  name: Order cocktail
-  description: Starts producing a recipe on the CocktailPi machine.
   fields:
     recipe_id:
-      name: Recipe ID
-      description: The numeric ID of the recipe to produce. Provide this or recipe_name, not both.
       example: 3
       selector:
         number:
           min: 1
           mode: box
     recipe_name:
-      name: Recipe name
-      description: The recipe's name, resolved to an ID via a search. Provide this or recipe_id, not both.
       example: Mojito
       selector:
         text:
     amount_ml:
-      name: Amount (mL)
-      description: Amount to produce, in millilitres. Defaults to the recipe's default glass size if omitted.
       example: 350
       selector:
         number:
@@ -27,40 +21,28 @@ order_cocktail:
           unit_of_measurement: mL
           mode: box
     is_ingredient:
-      name: Is ingredient recipe
-      description: Set to true if the ID/name refers to an ingredient recipe (e.g. a house-made syrup) rather than a regular cocktail.
       default: false
       selector:
         boolean:
     config_entry_id:
-      name: CocktailPi instance
-      description: Only needed if you have more than one CocktailPi configured.
       selector:
         config_entry:
           integration: cocktailpi
 
 cancel_cocktail:
-  name: Cancel cocktail
-  description: Cancels the cocktail currently in production.
   fields:
     config_entry_id:
-      name: CocktailPi instance
-      description: Only needed if you have more than one CocktailPi configured.
       selector:
         config_entry:
           integration: cocktailpi
 
 pump_up:
-  name: Prime pump
-  description: Runs the pump forward to prime/fill the tube.
   target:
     entity:
       integration: cocktailpi
       domain: valve
 
 pump_back:
-  name: Reverse-prime pump
-  description: Runs the pump backward to empty the tube back into the bottle. Requires direction-control hardware.
   target:
     entity:
       integration: cocktailpi
