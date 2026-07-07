@@ -15,6 +15,7 @@ from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import CocktailPiApiClient, CocktailPiAuthError, CocktailPiConnectionError, CocktailPiError
@@ -54,7 +55,7 @@ class CocktailPiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         try:
             pumps = await self.api.async_get_pumps()
         except CocktailPiAuthError as err:
-            raise UpdateFailed(f"Authentication with CocktailPi failed: {err}") from err
+            raise ConfigEntryAuthFailed(f"Authentication with CocktailPi failed: {err}") from err
         except (CocktailPiConnectionError, CocktailPiError) as err:
             raise UpdateFailed(f"Error communicating with CocktailPi: {err}") from err
 

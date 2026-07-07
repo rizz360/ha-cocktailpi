@@ -11,6 +11,14 @@
           "username": "Username",
           "password": "Password"
         }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate with CocktailPi",
+        "description": "The credentials for {host} no longer work. Enter a valid username and password.",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
       }
     },
     "error": {
@@ -19,7 +27,8 @@
       "unknown": "Unexpected error."
     },
     "abort": {
-      "already_configured": "This CocktailPi machine is already configured."
+      "already_configured": "This CocktailPi machine is already configured.",
+      "reauth_successful": "Re-authentication was successful."
     }
   }
 }

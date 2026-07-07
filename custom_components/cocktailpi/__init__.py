@@ -8,7 +8,11 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
-from homeassistant.exceptions import ConfigEntryNotReady, HomeAssistantError
+from homeassistant.exceptions import (
+    ConfigEntryAuthFailed,
+    ConfigEntryNotReady,
+    HomeAssistantError,
+)
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType
@@ -111,7 +115,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     try:
         await api.async_login()
     except CocktailPiAuthError as err:
-        raise ConfigEntryNotReady(f"Invalid credentials for CocktailPi: {err}") from err
+        raise ConfigEntryAuthFailed(f"Invalid credentials for CocktailPi: {err}") from err
     except CocktailPiConnectionError as err:
         raise ConfigEntryNotReady(f"Cannot connect to CocktailPi: {err}") from err
 
