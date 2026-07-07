@@ -325,9 +325,22 @@ Type-specific fields on top of the common ones:
 | POST | `/api/gpio` | `GpioBoardDto.Request.Create` | 201 |
 | PUT | `/api/gpio/{id}` | `GpioBoardDto.Request.Create` | 200/404 |
 | DELETE | `/api/gpio/{id}` | — | 200/404 |
-| GET | `/api/gpio/status` | — | `GpioStatus` (overall GPIO subsystem health, incl. I2C state) |
+| GET | `/api/gpio/status` | — | `GpioStatus` — just pin/board usage counts, no per-board health (see below) |
 | GET | `/api/gpio/{id}/pin` | — | `PinDto.Response.Detailed[]` for that board |
 | POST | `/api/gpio/{id}/restart` | — | restarts the given I2C board |
+
+`GpioBoardDto.Response.Detailed` (`payload/dto/gpio/GpioBoardDto.java:39-69`) — polymorphic on `"type"` (`"local"` or `"i2c"`, subtypes add board-specific fields like the I2C address):
+```json
+{
+  "id": 1,
+  "name": "Main board",
+  "type": "i2c",
+  "pinCount": 16,
+  "usedPinCount": 6,
+  "errors": [ {"exceptionTraceMessages": ["I2C bus not reachable"]} ]
+}
+```
+`errors` (`ErrorInfo[]`, `model/system/ErrorInfo.java`) is the board's actual health signal — each entry's `exceptionTraceMessages` is the causal-chain message list for one currently-active fault (e.g. an I2C bus that failed to initialize); an empty/absent list means the board is healthy. **This is the field to poll for GPIO/I2C health, not `GpioStatus`** — `GpioStatus` (`model/system/GpioStatus.java`) is just `{"pinsUsed": 6, "pinsAvailable": 10, "boardsAvailable": 1}`, aggregate usage counts with no error/health info at all, despite the endpoint being named `/status`.
 
 ### Event action — `/api/eventaction`
 (`endpoints/EventActionEndpoint.java`) — SUPER_ADMIN-only automation/triggers subsystem (e.g. run a script/URL-call/audio-clip on cocktail events). Potentially useful as the HA-integration side of a two-way automation bridge.
@@ -461,6 +474,15 @@ Destinations (`service/WebSocketService.java:34-40`):
   "runningState": { "jobId": 42, "isRunInfinity": false, "isForward": true, "percentage": 55, "state": "RUNNING" }
 }
 ```
+
+`DispensingAreaStateDto` (`payload/response/DispensingAreaStateDto.java`) — only meaningful on machines with glass-detection/load-cell hardware; on machines without it the backend still pushes this topic, just always with `areaEmpty: true` and `glass: null`:
+```json
+{
+  "glass": { "id": 3, "name": "Highball", "size": 350, "emptyWeight": 200, "isDefault": true, "isUseForSingleIngredients": false },
+  "areaEmpty": false
+}
+```
+`glass` (`GlassDto.Duplex.Detailed`, same shape as the [Glass](#glass---apiglass) endpoint) is only non-null when a glass is detected and matched against a configured glass; `areaEmpty` is the more reliable general-purpose "is something on the dispensing area" flag — don't rely on `glass` alone being non-null as the detection signal.
 
 ## Roles / permission model
 
