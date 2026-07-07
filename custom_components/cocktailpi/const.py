@@ -13,7 +13,7 @@ DEFAULT_PORT = 80
 DEFAULT_USE_SSL = False
 DEFAULT_SCAN_INTERVAL = timedelta(seconds=30)
 
-PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.VALVE]
+PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.VALVE, Platform.BUTTON]
 
 # Keys inside the coordinator's .data dict.
 DATA_PUMPS = "pumps"
