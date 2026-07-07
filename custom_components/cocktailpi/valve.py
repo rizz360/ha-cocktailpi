@@ -83,9 +83,10 @@ class CocktailPiPumpValve(CoordinatorEntity[CocktailPiCoordinator], ValveEntity)
 
     @property
     def is_closed(self) -> bool | None:
-        running = self.coordinator.data[DATA_PUMP_RUNNING].get(self._pump_id)
-        if running is not None:
-            state = (running.get("runningState") or {}).get("state")
+        pump_running = self.coordinator.data[DATA_PUMP_RUNNING]
+        if self._pump_id in pump_running:
+            running = pump_running[self._pump_id]
+            state = (running.get("runningState") or {}).get("state") if running else None
             return state not in PUMP_RUNNING_STATES
         if self._optimistic_open is None:
             return None
