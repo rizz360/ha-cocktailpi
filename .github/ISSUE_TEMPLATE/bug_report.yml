@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a problem with the CocktailPi integration
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the problem, what you expected to happen, and steps to reproduce it.
+    validations:
+      required: true
+  - type: input
+    id: ha-version
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.7.1"
+    validations:
+      required: true
+  - type: input
+    id: integration-version
+    attributes:
+      label: Integration version
+      description: Shown in HACS or in custom_components/cocktailpi/manifest.json.
+      placeholder: "0.4.0"
+    validations:
+      required: true
+  - type: input
+    id: cocktailpi-version
+    attributes:
+      label: CocktailPi version
+      placeholder: "1.5.2"
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: >-
+        Attach the diagnostics download: Settings → Devices & Services →
+        CocktailPi → ⋮ → Download diagnostics. Credentials and host are
+        redacted automatically.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Any errors from Settings → System → Logs mentioning cocktailpi.
+      render: text
