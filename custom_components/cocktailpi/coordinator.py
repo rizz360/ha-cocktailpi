@@ -8,6 +8,7 @@ equivalent - most importantly "what cocktail is currently being made", which
 CocktailPi only ever pushes, regardless of whether the order was placed from
 Home Assistant, the touchscreen, or anywhere else.
 """
+
 from __future__ import annotations
 
 import logging
@@ -20,7 +21,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import CocktailPiApiClient, CocktailPiAuthError, CocktailPiConnectionError, CocktailPiError
+from .api import (
+    CocktailPiApiClient,
+    CocktailPiAuthError,
+    CocktailPiConnectionError,
+    CocktailPiError,
+)
 from .const import (
     DATA_COCKTAIL,
     DATA_DISPENSING_AREA,
@@ -103,7 +109,9 @@ class CocktailPiCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if self.ws is not None:
             return
 
-        self.ws = CocktailPiWebSocketClient(self.api.session, self.api.base_url, lambda: self.api.token)
+        self.ws = CocktailPiWebSocketClient(
+            self.api.session, self.api.base_url, lambda: self.api.token
+        )
         self.ws.subscribe("/user/topic/cocktailprogress", self._on_cocktail_progress)
         self.ws.subscribe("/user/topic/pump/layout", self._on_pump_layout)
         self.ws.subscribe("/user/topic/dispensingarea", self._on_dispensing_area)

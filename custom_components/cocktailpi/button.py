@@ -1,4 +1,5 @@
 """Button platform for CocktailPi: cancel the cocktail currently in production."""
+
 from __future__ import annotations
 
 from homeassistant.components.button import ButtonEntity

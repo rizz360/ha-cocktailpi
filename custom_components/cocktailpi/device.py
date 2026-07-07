@@ -1,4 +1,5 @@
 """Shared device-info helpers, used by both the sensor and valve platforms."""
+
 from __future__ import annotations
 
 from typing import Any

@@ -7,6 +7,7 @@ corrected by the coordinator's WS overlay once a runningstate message
 arrives. The "all pumps" valve has no per-aggregate WS topic, so it always
 reports its state optimistically (assumed_state).
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -54,7 +55,9 @@ class CocktailPiPumpValve(CoordinatorEntity[CocktailPiCoordinator], ValveEntity)
     _attr_reports_position = False
     _attr_icon = "mdi:pump"
 
-    def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int) -> None:
+    def __init__(
+        self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int
+    ) -> None:
         super().__init__(coordinator)
         self._entry = entry
         self._pump_id = pump_id
@@ -118,7 +121,7 @@ class CocktailPiPumpValve(CoordinatorEntity[CocktailPiCoordinator], ValveEntity)
             raise HomeAssistantError(f"Could not prime pump: {err}") from err
 
     async def async_pump_back(self) -> None:
-        """Empty the tube back into the bottle (run reverse; requires direction-control hardware)."""
+        """Empty the tube back into the bottle (reverse; needs direction-control hardware)."""
         try:
             await self.coordinator.api.async_pump_back(self._pump_id)
         except CocktailPiError as err:

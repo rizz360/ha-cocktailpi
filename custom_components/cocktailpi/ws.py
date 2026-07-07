@@ -12,9 +12,11 @@ Per the CocktailPi backend, all pushes are sent via
 per-user queue - clients must SUBSCRIBE to ``/user/<topic>`` (not the raw
 ``/topic/<...>``) to receive anything.
 """
+
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 from collections.abc import Callable
@@ -98,10 +100,8 @@ class CocktailPiWebSocketClient:
         self._stopping = True
         if self._task is not None:
             self._task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError, Exception):
                 await self._task
-            except (asyncio.CancelledError, Exception):  # noqa: BLE001
-                pass
             self._task = None
 
     async def _async_run_forever(self) -> None:
@@ -112,7 +112,7 @@ class CocktailPiWebSocketClient:
                 backoff = _RECONNECT_MIN_SECONDS
             except asyncio.CancelledError:
                 raise
-            except Exception as err:  # noqa: BLE001
+            except Exception as err:
                 _LOGGER.debug("CocktailPi websocket disconnected: %s", err)
             if self._stopping:
                 return

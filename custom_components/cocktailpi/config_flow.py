@@ -1,4 +1,5 @@
 """Config flow for CocktailPi."""
+
 from __future__ import annotations
 
 import logging
@@ -6,9 +7,14 @@ from collections.abc import Mapping
 from typing import Any
 
 import voluptuous as vol
-
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResult, OptionsFlow
-from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL, CONF_USERNAME
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_PASSWORD,
+    CONF_PORT,
+    CONF_SCAN_INTERVAL,
+    CONF_USERNAME,
+)
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -56,9 +62,7 @@ class CocktailPiConfigFlow(ConfigFlow, domain=DOMAIN):
     def async_get_options_flow(config_entry: ConfigEntry) -> CocktailPiOptionsFlow:
         return CocktailPiOptionsFlow(config_entry)
 
-    async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         errors: dict[str, str] = {}
 
         if user_input is not None:
@@ -80,7 +84,7 @@ class CocktailPiConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_auth"
             except CocktailPiConnectionError:
                 errors["base"] = "cannot_connect"
-            except Exception:  # noqa: BLE001
+            except Exception:
                 _LOGGER.exception("Unexpected error validating the CocktailPi connection")
                 errors["base"] = "unknown"
             else:
@@ -118,13 +122,11 @@ class CocktailPiConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_auth"
             except CocktailPiConnectionError:
                 errors["base"] = "cannot_connect"
-            except Exception:  # noqa: BLE001
+            except Exception:
                 _LOGGER.exception("Unexpected error validating the CocktailPi connection")
                 errors["base"] = "unknown"
             else:
-                return self.async_update_reload_and_abort(
-                    entry, data={**entry.data, **user_input}
-                )
+                return self.async_update_reload_and_abort(entry, data={**entry.data, **user_input})
 
         return self.async_show_form(
             step_id="reauth_confirm",
@@ -140,9 +142,7 @@ class CocktailPiOptionsFlow(OptionsFlow):
     def __init__(self, entry: ConfigEntry) -> None:
         self._entry = entry
 
-    async def async_step_init(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
@@ -157,9 +157,7 @@ class CocktailPiOptionsFlow(OptionsFlow):
                         ),
                     ): vol.All(
                         vol.Coerce(int),
-                        vol.Range(
-                            min=MIN_SCAN_INTERVAL_SECONDS, max=MAX_SCAN_INTERVAL_SECONDS
-                        ),
+                        vol.Range(min=MIN_SCAN_INTERVAL_SECONDS, max=MAX_SCAN_INTERVAL_SECONDS),
                     ),
                 }
             ),

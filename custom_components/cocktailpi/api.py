@@ -5,6 +5,7 @@ envelopes) are documented in ``documentation/API.md`` at the root of the
 CocktailPi repository this integration was built alongside - re-check that
 file if the backend's API ever changes.
 """
+
 from __future__ import annotations
 
 import logging

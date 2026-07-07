@@ -1,4 +1,5 @@
 """Sensor platform for CocktailPi: pump fill level/status, and current cocktail progress/state."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -187,7 +188,9 @@ class _PumpEntityBase(CoordinatorEntity[CocktailPiCoordinator]):
 
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int) -> None:
+    def __init__(
+        self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int
+    ) -> None:
         super().__init__(coordinator)
         self._entry = entry
         self._pump_id = pump_id
@@ -217,7 +220,9 @@ class CocktailPiPumpFillLevelSensor(_PumpEntityBase, SensorEntity):
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:cup-water"
 
-    def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int) -> None:
+    def __init__(
+        self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int
+    ) -> None:
         super().__init__(coordinator, entry, pump_id)
         self._attr_unique_id = f"{entry.entry_id}_pump_{pump_id}_fill_level"
 
@@ -238,7 +243,9 @@ class CocktailPiPumpStatusSensor(_PumpEntityBase, SensorEntity):
     _attr_translation_key = "pump_status"
     _attr_icon = "mdi:information-outline"
 
-    def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int) -> None:
+    def __init__(
+        self, coordinator: CocktailPiCoordinator, entry: ConfigEntry, pump_id: int
+    ) -> None:
         super().__init__(coordinator, entry, pump_id)
         self._attr_unique_id = f"{entry.entry_id}_pump_{pump_id}_status"
 

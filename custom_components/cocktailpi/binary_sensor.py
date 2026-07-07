@@ -1,4 +1,5 @@
 """Binary sensor platform for CocktailPi: glass detection on the dispensing area."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -74,7 +75,9 @@ class CocktailPiGlassDetectedBinarySensor(
         return {"glass": glass.get("name")} if glass else {}
 
 
-class CocktailPiGpioHealthBinarySensor(CoordinatorEntity[CocktailPiCoordinator], BinarySensorEntity):
+class CocktailPiGpioHealthBinarySensor(
+    CoordinatorEntity[CocktailPiCoordinator], BinarySensorEntity
+):
     """Whether any configured GPIO/I2C board is currently reporting errors.
 
     Backed by ``GET /api/gpio/``, which requires a SUPER_ADMIN account (see
