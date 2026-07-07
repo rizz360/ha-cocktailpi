@@ -42,7 +42,8 @@ anywhere in the UI as a pending/discovered item, and there's no way to clear it 
 ## Features
 
 - **Pump monitoring**: a fill-level sensor (mL) and a status sensor (current ingredient + pump
-  state) per pump, polled over REST every 30s.
+  state) per pump, polled over REST every 30s by default (configurable from 10–300s via the
+  integration's **Configure** dialog).
 - **Pump control**: each pump is exposed as a `valve` entity — *open* starts the pump, *close*
   stops it — plus one aggregate "All pumps" valve. There are also `pump_up`/`pump_back` entity
   services (target a pump valve) to prime/reverse-prime a pump's tube.
@@ -54,6 +55,12 @@ anywhere in the UI as a pending/discovered item, and there's no way to clear it 
   error) — these reflect orders placed from *anywhere* (the CocktailPi touchscreen included), not
   just from Home Assistant.
 - **System info**: CocktailPi's version is attached as the hub device's `sw_version`.
+- **Reauthentication**: if the CocktailPi credentials stop working, Home Assistant prompts to
+  re-enter them instead of silently retrying.
+- **Diagnostics**: a redacted diagnostics download (Settings → Devices & Services → CocktailPi →
+  ⋮ → Download diagnostics) for issue reports.
+- **Translations**: English, German, French, and Spanish for the config flow, entity names, and
+  services.
 
 ## Architecture notes
 
@@ -79,6 +86,18 @@ anywhere in the UI as a pending/discovered item, and there's no way to clear it 
   worth knowing about if you extend this further into event-action status/logs.
 - Only one CocktailPi instance can be targeted implicitly by the `order_cocktail`/`cancel_cocktail`
   services; with more than one configured, pass `config_entry_id` explicitly.
+
+## Development
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements_test.txt ruff
+.venv/bin/pytest          # run the test suite
+ruff check custom_components tests
+ruff format --check custom_components tests
+```
+
+CI runs HACS validation, hassfest, ruff (lint + format), and pytest on every push and PR.
+Releases are cut by release-please from conventional commit messages.
 
 ## TODO before publishing
 
