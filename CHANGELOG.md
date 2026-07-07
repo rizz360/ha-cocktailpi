@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/rizz360/ha-cocktailpi/compare/ha-cocktailpi-v0.5.0...ha-cocktailpi-v0.5.1) (2026-07-07)
+
+
+### Bug Fixes
+
+* report only the version string as the hub's sw_version ([0650f5a](https://github.com/rizz360/ha-cocktailpi/commit/0650f5af02b8eb25057d1fa5e5e0f5aeb02e5ac1))
+
 ## [0.5.0](https://github.com/rizz360/ha-cocktailpi/compare/ha-cocktailpi-v0.4.0...ha-cocktailpi-v0.5.0) (2026-07-07)
 
 
