@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/rizz360/ha-cocktailpi/compare/ha-cocktailpi-v0.4.0...ha-cocktailpi-v0.5.0) (2026-07-07)
+
+
+### Features
+
+* make the polling interval configurable via an options flow ([9e70eed](https://github.com/rizz360/ha-cocktailpi/commit/9e70eed7c95c619a015d9c31446537f7a9f07883)), closes [#4](https://github.com/rizz360/ha-cocktailpi/issues/4)
+
 ## [0.4.0](https://github.com/rizz360/ha-cocktailpi/compare/ha-cocktailpi-v0.3.0...ha-cocktailpi-v0.4.0) (2026-07-07)
 
 
