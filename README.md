@@ -79,17 +79,8 @@ anywhere in the UI as a pending/discovered item, and there's no way to clear it 
 - Only one CocktailPi instance can be targeted implicitly by the `order_cocktail`/`cancel_cocktail`
   services; with more than one configured, pass `config_entry_id` explicitly.
 
-## Status
-
-This integration has not yet been tested against a live CocktailPi instance or a running Home
-Assistant install — it's scaffolded and byte-compiles cleanly, but the config flow, entities,
-services, and especially the hand-rolled STOMP WebSocket client (`ws.py`) are unverified. Treat it
-as a release candidate, not a working release, until that testing happens.
-
 ## TODO before publishing
 
-- Test against a real CocktailPi backend + running HA (config flow, sensors/valves, services, WS
-  client).
 - The icon under `custom_components/cocktailpi/brand/` only renders in Home Assistant's own UI
   (2026.3+, via the brands proxy). The HACS store listing itself sources its icon from
   [home-assistant/brands](https://github.com/home-assistant/brands)
