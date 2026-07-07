@@ -9,7 +9,7 @@
 
 A custom integration for [CocktailPi](https://github.com/alex9849/CocktailPi) that connects your
 cocktail maker to Home Assistant. An API reference is maintained at
-[`docs/api.md`](docs/api.md) for anyone looking to build on top of it, and a ready-made
+[`docs/api.md`](docs/api.md) for anyone looking to build on top of it. A ready-made
 dashboard (screenshot + copy-paste YAML) lives in [`docs/dashboard.md`](docs/dashboard.md).
 
 This repo includes a `hacs.json`, so it can be added to HACS as a custom repository, or installed
