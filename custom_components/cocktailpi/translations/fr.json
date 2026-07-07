@@ -1,0 +1,133 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Se connecter à CocktailPi",
+        "description": "Saisissez les informations de connexion de votre machine CocktailPi.",
+        "data": {
+          "host": "Hôte",
+          "port": "Port",
+          "use_ssl": "Utiliser HTTPS",
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Se réauthentifier auprès de CocktailPi",
+        "description": "Les identifiants pour {host} ne fonctionnent plus. Saisissez un nom d'utilisateur et un mot de passe valides.",
+        "data": {
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Nom d'utilisateur ou mot de passe invalide.",
+      "cannot_connect": "Impossible de se connecter à CocktailPi. Vérifiez l'hôte et le port.",
+      "unknown": "Erreur inattendue."
+    },
+    "abort": {
+      "already_configured": "Cette machine CocktailPi est déjà configurée.",
+      "reauth_successful": "La réauthentification a réussi."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "current_cocktail": {
+        "name": "Cocktail en cours"
+      },
+      "cocktail_progress": {
+        "name": "Progression du cocktail"
+      },
+      "cocktail_state": {
+        "name": "État du cocktail",
+        "state": {
+          "idle": "Inactif",
+          "ready_to_start": "Prêt à démarrer",
+          "running": "En cours",
+          "manual_ingredient_add": "Ajout manuel d'ingrédient",
+          "manual_action_required": "Action manuelle requise",
+          "finished": "Terminé",
+          "cancelled": "Annulé",
+          "error": "Erreur"
+        }
+      },
+      "load_cell_weight": {
+        "name": "Poids du capteur de pesée"
+      },
+      "pump_fill_level": {
+        "name": "{pump_label} niveau de remplissage"
+      },
+      "pump_status": {
+        "name": "{pump_label} statut"
+      }
+    },
+    "binary_sensor": {
+      "glass_detected": {
+        "name": "Verre détecté"
+      },
+      "gpio_health": {
+        "name": "État des GPIO"
+      }
+    },
+    "button": {
+      "cancel_cocktail": {
+        "name": "Annuler le cocktail"
+      }
+    },
+    "valve": {
+      "pump": {
+        "name": "{pump_label}"
+      },
+      "all_pumps": {
+        "name": "Toutes les pompes"
+      }
+    }
+  },
+  "services": {
+    "order_cocktail": {
+      "name": "Commander un cocktail",
+      "description": "Lance la préparation d'une recette sur la machine CocktailPi.",
+      "fields": {
+        "recipe_id": {
+          "name": "ID de la recette",
+          "description": "L'identifiant numérique de la recette à préparer. Fournir celui-ci ou le nom de la recette, pas les deux."
+        },
+        "recipe_name": {
+          "name": "Nom de la recette",
+          "description": "Le nom de la recette, résolu en ID via une recherche. Fournir celui-ci ou l'ID de la recette, pas les deux."
+        },
+        "amount_ml": {
+          "name": "Quantité (ml)",
+          "description": "Quantité à préparer, en millilitres. Par défaut, la taille de verre par défaut de la recette est utilisée."
+        },
+        "is_ingredient": {
+          "name": "Recette d'ingrédient",
+          "description": "Activer si l'ID ou le nom désigne une recette d'ingrédient (p. ex. un sirop maison) plutôt qu'un cocktail classique."
+        },
+        "config_entry_id": {
+          "name": "Instance CocktailPi",
+          "description": "Nécessaire uniquement si plusieurs CocktailPi sont configurés."
+        }
+      }
+    },
+    "cancel_cocktail": {
+      "name": "Annuler le cocktail",
+      "description": "Annule le cocktail en cours de préparation.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Instance CocktailPi",
+          "description": "Nécessaire uniquement si plusieurs CocktailPi sont configurés."
+        }
+      }
+    },
+    "pump_up": {
+      "name": "Amorcer la pompe",
+      "description": "Fait tourner la pompe vers l'avant pour amorcer/remplir le tube."
+    },
+    "pump_back": {
+      "name": "Vidanger la pompe",
+      "description": "Fait tourner la pompe en sens inverse pour vider le tube dans la bouteille. Nécessite un matériel avec contrôle de direction."
+    }
+  }
+}

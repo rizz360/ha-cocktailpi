@@ -1,0 +1,133 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Mit CocktailPi verbinden",
+        "description": "Gib die Verbindungsdaten deiner CocktailPi-Maschine ein.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "use_ssl": "HTTPS verwenden",
+          "username": "Benutzername",
+          "password": "Passwort"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Erneut bei CocktailPi anmelden",
+        "description": "Die Zugangsdaten für {host} funktionieren nicht mehr. Gib einen gültigen Benutzernamen und ein gültiges Passwort ein.",
+        "data": {
+          "username": "Benutzername",
+          "password": "Passwort"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Ungültiger Benutzername oder ungültiges Passwort.",
+      "cannot_connect": "Verbindung zu CocktailPi nicht möglich. Prüfe Host und Port.",
+      "unknown": "Unerwarteter Fehler."
+    },
+    "abort": {
+      "already_configured": "Diese CocktailPi-Maschine ist bereits konfiguriert.",
+      "reauth_successful": "Die erneute Anmeldung war erfolgreich."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "current_cocktail": {
+        "name": "Aktueller Cocktail"
+      },
+      "cocktail_progress": {
+        "name": "Cocktail-Fortschritt"
+      },
+      "cocktail_state": {
+        "name": "Cocktail-Status",
+        "state": {
+          "idle": "Leerlauf",
+          "ready_to_start": "Bereit zum Start",
+          "running": "Läuft",
+          "manual_ingredient_add": "Zutat manuell hinzufügen",
+          "manual_action_required": "Manueller Eingriff erforderlich",
+          "finished": "Fertig",
+          "cancelled": "Abgebrochen",
+          "error": "Fehler"
+        }
+      },
+      "load_cell_weight": {
+        "name": "Wägezellen-Gewicht"
+      },
+      "pump_fill_level": {
+        "name": "{pump_label} Füllstand"
+      },
+      "pump_status": {
+        "name": "{pump_label} Status"
+      }
+    },
+    "binary_sensor": {
+      "glass_detected": {
+        "name": "Glas erkannt"
+      },
+      "gpio_health": {
+        "name": "GPIO-Zustand"
+      }
+    },
+    "button": {
+      "cancel_cocktail": {
+        "name": "Cocktail abbrechen"
+      }
+    },
+    "valve": {
+      "pump": {
+        "name": "{pump_label}"
+      },
+      "all_pumps": {
+        "name": "Alle Pumpen"
+      }
+    }
+  },
+  "services": {
+    "order_cocktail": {
+      "name": "Cocktail bestellen",
+      "description": "Startet die Zubereitung eines Rezepts auf der CocktailPi-Maschine.",
+      "fields": {
+        "recipe_id": {
+          "name": "Rezept-ID",
+          "description": "Die numerische ID des zuzubereitenden Rezepts. Entweder diese oder den Rezeptnamen angeben, nicht beides."
+        },
+        "recipe_name": {
+          "name": "Rezeptname",
+          "description": "Der Name des Rezepts, der per Suche in eine ID aufgelöst wird. Entweder diesen oder die Rezept-ID angeben, nicht beides."
+        },
+        "amount_ml": {
+          "name": "Menge (ml)",
+          "description": "Zuzubereitende Menge in Millilitern. Ohne Angabe wird die Standard-Glasgröße des Rezepts verwendet."
+        },
+        "is_ingredient": {
+          "name": "Ist Zutatenrezept",
+          "description": "Auf „wahr“ setzen, wenn sich die ID bzw. der Name auf ein Zutatenrezept bezieht (z. B. einen selbstgemachten Sirup) statt auf einen normalen Cocktail."
+        },
+        "config_entry_id": {
+          "name": "CocktailPi-Instanz",
+          "description": "Nur nötig, wenn mehr als ein CocktailPi konfiguriert ist."
+        }
+      }
+    },
+    "cancel_cocktail": {
+      "name": "Cocktail abbrechen",
+      "description": "Bricht den Cocktail ab, der gerade zubereitet wird.",
+      "fields": {
+        "config_entry_id": {
+          "name": "CocktailPi-Instanz",
+          "description": "Nur nötig, wenn mehr als ein CocktailPi konfiguriert ist."
+        }
+      }
+    },
+    "pump_up": {
+      "name": "Pumpe befüllen",
+      "description": "Lässt die Pumpe vorwärts laufen, um den Schlauch zu befüllen."
+    },
+    "pump_back": {
+      "name": "Pumpe rückwärts entleeren",
+      "description": "Lässt die Pumpe rückwärts laufen, um den Schlauch zurück in die Flasche zu entleeren. Erfordert Hardware mit Richtungssteuerung."
+    }
+  }
+}

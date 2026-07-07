@@ -1,0 +1,133 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Conectar con CocktailPi",
+        "description": "Introduce los datos de conexión de tu máquina CocktailPi.",
+        "data": {
+          "host": "Host",
+          "port": "Puerto",
+          "use_ssl": "Usar HTTPS",
+          "username": "Nombre de usuario",
+          "password": "Contraseña"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Volver a autenticarse con CocktailPi",
+        "description": "Las credenciales para {host} ya no funcionan. Introduce un nombre de usuario y una contraseña válidos.",
+        "data": {
+          "username": "Nombre de usuario",
+          "password": "Contraseña"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Nombre de usuario o contraseña no válidos.",
+      "cannot_connect": "No se pudo conectar con CocktailPi. Comprueba el host y el puerto.",
+      "unknown": "Error inesperado."
+    },
+    "abort": {
+      "already_configured": "Esta máquina CocktailPi ya está configurada.",
+      "reauth_successful": "La reautenticación se realizó correctamente."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "current_cocktail": {
+        "name": "Cóctel actual"
+      },
+      "cocktail_progress": {
+        "name": "Progreso del cóctel"
+      },
+      "cocktail_state": {
+        "name": "Estado del cóctel",
+        "state": {
+          "idle": "Inactivo",
+          "ready_to_start": "Listo para empezar",
+          "running": "En curso",
+          "manual_ingredient_add": "Añadir ingrediente manualmente",
+          "manual_action_required": "Se requiere acción manual",
+          "finished": "Terminado",
+          "cancelled": "Cancelado",
+          "error": "Error"
+        }
+      },
+      "load_cell_weight": {
+        "name": "Peso de la célula de carga"
+      },
+      "pump_fill_level": {
+        "name": "{pump_label} nivel de llenado"
+      },
+      "pump_status": {
+        "name": "{pump_label} estado"
+      }
+    },
+    "binary_sensor": {
+      "glass_detected": {
+        "name": "Vaso detectado"
+      },
+      "gpio_health": {
+        "name": "Estado de los GPIO"
+      }
+    },
+    "button": {
+      "cancel_cocktail": {
+        "name": "Cancelar cóctel"
+      }
+    },
+    "valve": {
+      "pump": {
+        "name": "{pump_label}"
+      },
+      "all_pumps": {
+        "name": "Todas las bombas"
+      }
+    }
+  },
+  "services": {
+    "order_cocktail": {
+      "name": "Pedir cóctel",
+      "description": "Inicia la preparación de una receta en la máquina CocktailPi.",
+      "fields": {
+        "recipe_id": {
+          "name": "ID de la receta",
+          "description": "El ID numérico de la receta a preparar. Indica este o el nombre de la receta, no ambos."
+        },
+        "recipe_name": {
+          "name": "Nombre de la receta",
+          "description": "El nombre de la receta, resuelto a un ID mediante una búsqueda. Indica este o el ID de la receta, no ambos."
+        },
+        "amount_ml": {
+          "name": "Cantidad (ml)",
+          "description": "Cantidad a preparar, en mililitros. Si se omite, se usa el tamaño de vaso predeterminado de la receta."
+        },
+        "is_ingredient": {
+          "name": "Es receta de ingrediente",
+          "description": "Actívalo si el ID o el nombre se refiere a una receta de ingrediente (p. ej., un sirope casero) en lugar de a un cóctel normal."
+        },
+        "config_entry_id": {
+          "name": "Instancia de CocktailPi",
+          "description": "Solo es necesario si tienes más de un CocktailPi configurado."
+        }
+      }
+    },
+    "cancel_cocktail": {
+      "name": "Cancelar cóctel",
+      "description": "Cancela el cóctel que se está preparando actualmente.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Instancia de CocktailPi",
+          "description": "Solo es necesario si tienes más de un CocktailPi configurado."
+        }
+      }
+    },
+    "pump_up": {
+      "name": "Cebar bomba",
+      "description": "Hace funcionar la bomba hacia delante para cebar/llenar el tubo."
+    },
+    "pump_back": {
+      "name": "Vaciar bomba en sentido inverso",
+      "description": "Hace funcionar la bomba hacia atrás para devolver el contenido del tubo a la botella. Requiere hardware con control de dirección."
+    }
+  }
+}
