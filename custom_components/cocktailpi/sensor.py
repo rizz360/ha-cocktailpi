@@ -5,7 +5,7 @@ from typing import Any
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE
+from homeassistant.const import PERCENTAGE, UnitOfMass
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -26,6 +26,7 @@ async def async_setup_entry(
         CocktailPiCurrentCocktailSensor(coordinator, entry),
         CocktailPiCocktailProgressSensor(coordinator, entry),
         CocktailPiCocktailStateSensor(coordinator, entry),
+        CocktailPiLoadCellWeightSensor(coordinator, entry),
     ]
     for pump_id in coordinator.data[DATA_PUMPS]:
         entities.append(CocktailPiPumpFillLevelSensor(coordinator, entry, pump_id))
@@ -135,6 +136,40 @@ class CocktailPiCocktailStateSensor(CoordinatorEntity[CocktailPiCoordinator], Se
         if not progress:
             return "idle"
         return str(progress.get("state", "idle")).lower()
+
+
+class CocktailPiLoadCellWeightSensor(CoordinatorEntity[CocktailPiCoordinator], SensorEntity):
+    """Live weight reading from the dispensing area's load cell, in grams.
+
+    Only present while a cocktail is being produced, and only meaningful on
+    machines with load-cell hardware configured (``showLoadCellValue`` in the
+    cocktail-progress payload - see ``documentation/API.md``). Disabled by
+    default since not every setup has this hardware.
+    """
+
+    _attr_has_entity_name = True
+    _attr_name = "Load cell weight"
+    _attr_icon = "mdi:scale"
+    _attr_native_unit_of_measurement = UnitOfMass.GRAMS
+    _attr_device_class = SensorDeviceClass.WEIGHT
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_entity_registry_enabled_default = False
+
+    def __init__(self, coordinator: CocktailPiCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator)
+        self._entry = entry
+        self._attr_unique_id = f"{entry.entry_id}_load_cell_weight"
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        return hub_device_info(self._entry, self.coordinator.data.get(DATA_VERSION))
+
+    @property
+    def native_value(self) -> int | None:
+        progress = self.coordinator.data.get(DATA_COCKTAIL)
+        if not progress or not progress.get("showLoadCellValue"):
+            return None
+        return progress.get("loadCellValue")
 
 
 class _PumpEntityBase(CoordinatorEntity[CocktailPiCoordinator]):
