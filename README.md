@@ -19,6 +19,7 @@ manually.
 1. In HACS, go to **Integrations → ⋮ → Custom repositories**.
 2. Add `https://github.com/rizz360/ha-cocktailpi` with category **Integration**.
 3. Install "CocktailPi", then restart Home Assistant.
+4. Add the integration via **Settings → Devices & Services → Add Integration → CocktailPi**.
 
 ### Manual
 
